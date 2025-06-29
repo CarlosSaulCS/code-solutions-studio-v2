@@ -67,7 +67,10 @@ export const useContactForm = () => {
       }
 
       const result = await response.json()
+      console.log('Contact form response:', result) // Debug log
+      
       if (result.success) {
+        console.log('Setting success to true') // Debug log
         setIsSuccess(true)
         setFormData(initialFormData)
       } else {

@@ -36,6 +36,9 @@ export default function ContactForm() {
     resetForm,
   } = useContactForm()
 
+  // Debug log
+  console.log('ContactForm state:', { isLoading, isSuccess, error })
+
   if (isSuccess) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
@@ -159,7 +162,11 @@ export default function ContactForm() {
                   </div>
                 )}
 
-                <form onSubmit={submitForm} className="space-y-6">
+                <form onSubmit={(e) => {
+                  e.preventDefault()
+                  console.log('Form submitted') // Debug log
+                  submitForm(e)
+                }} className="space-y-6">
                   {/* Name Field */}
                   <div>
                     <label htmlFor="name" className="block text-gray-700 font-medium mb-2">
