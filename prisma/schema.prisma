@@ -1,0 +1,249 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?   // For credentials login
+  role          String    @default("CLIENT") // CLIENT, ADMIN, DEVELOPER, DESIGNER, MANAGER
+  phone         String?
+  company       String?
+  stripeCustomerId String? // Stripe customer ID for payments
+  preferences   String?   // JSON string for user preferences (theme, notifications, etc.)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  accounts             Account[]
+  sessions             Session[]
+  quotes               Quote[]
+  projects             Project[]
+  notifications        Notification[]
+  messages             Message[]
+  projectFiles         ProjectFile[]
+  payments             Payment[]
+  emailVerificationTokens EmailVerificationToken[] @relation("EmailVerification")
+  passwordResetTokens  PasswordResetToken[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model EmailVerificationToken {
+  id         String   @id @default(cuid())
+  token      String   @unique
+  expires    DateTime
+  userId     String
+  user       User     @relation("EmailVerification", fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@map("email_verification_tokens")
+}
+
+// NextAuth.js required model
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expires   DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
+}
+
+model Quote {
+  id              String   @id @default(cuid())
+  userId          String
+  serviceType     String   // WEB, MOBILE, ECOMMERCE, CLOUD, AI, CONSULTING
+  packageType     String   // STARTUP, BUSINESS, ENTERPRISE, CUSTOM
+  selectedAddons  String?  // JSON string of addon IDs
+  basePrice       Float
+  addonsPrice     Float    @default(0)
+  totalPrice      Float
+  currency        String   @default("MXN")
+  timeline        Int      // Days
+  status          String   @default("PENDING") // PENDING, APPROVED, REJECTED, EXPIRED, CONVERTED
+  notes           String?
+  adminNotes      String?
+  validUntil      DateTime
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project?
+
+  @@map("quotes")
+}
+
+model Project {
+  id              String   @id @default(cuid())
+  quoteId         String?  @unique
+  userId          String
+  title           String
+  description     String?
+  serviceType     String
+  packageType     String
+  status          String   @default("QUOTE_RECEIVED") // QUOTE_RECEIVED, QUOTE_APPROVED, PLANNING, DEVELOPMENT, TESTING, REVIEW, DELIVERY, COMPLETED, ON_HOLD, CANCELLED
+  progress        Int      @default(0) // 0-100
+  budget          Float
+  startDate       DateTime?
+  estimatedEndDate DateTime?
+  actualEndDate   DateTime?
+  milestones      String?  // JSON string of milestone objects
+  statusNotes     String?  // Notas adicionales sobre el estado actual
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quote        Quote?        @relation(fields: [quoteId], references: [id])
+  files        ProjectFile[]
+  messages     Message[]
+  payments     Payment[]
+
+  @@map("projects")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      String   @default("INFO") // INFO, SUCCESS, WARNING, ERROR
+  read      Boolean  @default(false)
+  actionUrl String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  projectId String?
+  userId    String
+  content   String
+  type      String   @default("TEXT") // TEXT, FILE, SYSTEM, EMAIL, CONTACT_FORM
+  isFromAdmin Boolean @default(false)
+  status    String   @default("UNREAD") // UNREAD, READ, REPLIED, ARCHIVED
+  priority  String   @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
+  subject   String?
+  senderEmail String?
+  requiresEmailResponse Boolean @default(false)
+  responseMethod String? // EMAIL, CHAT, PHONE
+  readAt    DateTime?
+  repliedAt DateTime?
+  createdAt DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+model ProjectFile {
+  id        String   @id @default(cuid())
+  projectId String
+  userId    String
+  fileName  String
+  fileUrl   String
+  fileSize  Int
+  fileType  String
+  category  String   @default("GENERAL") // GENERAL, DESIGN, DOCUMENT, CODE, ASSET
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("project_files")
+}
+
+model Payment {
+  id              String   @id @default(cuid())
+  projectId       String
+  userId          String
+  stripePaymentId String?
+  amount          Float
+  currency        String   @default("MXN")
+  status          String   @default("PENDING") // PENDING, COMPLETED, FAILED, REFUNDED
+  description     String?
+  dueDate         DateTime?
+  paidAt          DateTime?
+  createdAt       DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model ContactForm {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  company   String?
+  service   String?
+  budget    String?
+  timeline  String?
+  message   String
+  status    String   @default("NEW") // NEW, IN_PROGRESS, REPLIED, CLOSED
+  priority  String   @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
+  responseMethod String @default("EMAIL") // EMAIL, PHONE, CHAT
+  assignedToAdmin String? // Admin user ID who is handling this
+  internalNotes String? // Private notes for admin
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("contact_forms")
+}
