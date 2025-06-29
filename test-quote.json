@@ -1,0 +1,17 @@
+{
+  "serviceType": "WEB",
+  "packageType": "STARTUP",
+  "basePrice": 15000,
+  "totalPrice": 15000,
+  "timeline": 30,
+  "contactInfo": {
+    "name": "Test User Quote",
+    "email": "testquote@example.com",
+    "phone": "+1234567890",
+    "company": "Test Company"
+  },
+  "selectedAddons": [],
+  "addonsPrice": 0,
+  "currency": "MXN",
+  "notes": "Test quote from API"
+}
