@@ -39,17 +39,26 @@ export const useContactForm = () => {
     }))
   }
 
-  const submitForm = async () => {
+  const submitForm = async (e?: React.FormEvent) => {
+    if (e) {
+      e.preventDefault()
+    }
+    
     setIsLoading(true)
     setError(null)
 
     try {
+      const submitData = {
+        ...formData,
+        service: formData.subject || formData.service // Map subject to service for backend compatibility
+      }
+
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(submitData)
       })
 
       if (!response.ok) {
