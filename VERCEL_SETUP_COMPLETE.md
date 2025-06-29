@@ -23,7 +23,7 @@ re_f4Y3HzmY_2eCHjryUzyXCJ6jbNbqwN2Rc
 
 ```
 ADMIN_EMAIL
-carlossaul.cs@hotmail.com
+carlossaulcante@outlook.com
 ```
 
 ### **⚙️ NEXTAUTH:**
@@ -75,7 +75,7 @@ re_f4Y3HzmY_2eCHjryUzyXCJ6jbNbqwN2Rc
 
 **ADMIN_EMAIL:**
 ```
-carlossaul.cs@hotmail.com
+carlossaulcante@outlook.com
 ```
 
 **NEXTAUTH_URL:**

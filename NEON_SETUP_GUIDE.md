@@ -31,7 +31,7 @@ DIRECT_URL=tu_direct_connection_de_neon_aqui
 
 # 🔑 EMAIL
 RESEND_API_KEY=re_f4Y3HzmY_2eCHjryUzyXCJ6jbNbqwN2Rc
-ADMIN_EMAIL=carlossaul.cs@hotmail.com
+ADMIN_EMAIL=carlossaulcante@outlook.com
 
 # ⚙️ NEXT
 NODE_ENV=production

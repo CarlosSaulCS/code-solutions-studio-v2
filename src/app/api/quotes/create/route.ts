@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
     // Send email notification
     try {
       await sendEmail({
-        to: process.env.ADMIN_EMAIL || 'carlossaul.cs@hotmail.com',
+        to: process.env.ADMIN_EMAIL || 'carlossaulcante@outlook.com',
         subject: `Nueva cotización - ${contactInfo.name}`,
         html: `
           <h2>Nueva solicitud de cotización</h2>
