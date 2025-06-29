@@ -3,18 +3,71 @@
 ## ✅ **PROBLEMAS SOLUCIONADOS**
 
 ### **Formulario de Contacto** (`/contact`)
-- ✅ **Simplificado** el endpoint `/api/contact`
-- ✅ **Eliminada dependencia** de servicio de email problemático
-- ✅ **Guardado directo** en base de datos
+- ✅ **Actualizado** para funcionar con o sin base de datos
+- ✅ **Integración con Resend** para envío de emails  
+- ✅ **Fallback graceful** si falla la BD
 - ✅ **Validación mejorada** de campos
-- ✅ **Manejo de errores** más claro
+- ✅ **Manejo de errores** más robusto
 
 ### **Formulario de Cotización** (`/quoter`)
-- ✅ **Simplificado** el endpoint `/api/quotes/create`
-- ✅ **Eliminados requerimientos** de autenticación complejos
-- ✅ **Creación automática** de usuarios si no existen
+- ✅ **Actualizado** para funcionar con o sin base de datos
+- ✅ **Integración con Resend** para notificaciones
+- ✅ **Fallback graceful** si falla la BD
 - ✅ **Proceso streamlined** de generación de cotizaciones
 - ✅ **Respuestas JSON** más claras
+
+## ⚠️ **CONFIGURACIÓN REQUERIDA**
+
+### **🔑 RESEND API KEY**
+Para que los formularios funcionen en producción, necesitas:
+
+1. **Crear cuenta en Resend:** https://resend.com
+2. **Generar API Key**
+3. **Configurar en Vercel:** `RESEND_API_KEY=re_tu_api_key_aqui`
+
+**➡️ Consulta:** `RESEND_SETUP_GUIDE.md` para instrucciones completas
+
+## 🧪 **ESTADO DE FUNCIONAMIENTO**
+
+### **✅ LOCAL (Desarrollo):**
+- ✅ **Contacto:** http://localhost:3000/api/contact
+- ✅ **Cotización:** http://localhost:3000/api/quotes/create
+- ✅ **Base de datos:** SQLite funcional
+- ✅ **Guardado:** Funciona correctamente
+
+### **⏳ PRODUCCIÓN (Vercel):**
+- ⚠️ **Estado:** Requiere configuración de Resend
+- ⚠️ **Base de datos:** No disponible (SQLite no funciona en serverless)
+- ✅ **Fallback:** Preparado para funcionar solo con emails
+- ✅ **Build:** Desplegado correctamente
+
+## 🎯 **PRÓXIMOS PASOS PARA COMPLETAR**
+
+### **1. Configurar Resend (INMEDIATO)** ⏳
+```bash
+# En Vercel Environment Variables:
+RESEND_API_KEY=re_tu_api_key_aqui
+ADMIN_EMAIL=carlossaul.cs@hotmail.com
+```
+
+### **2. Configurar Base de Datos (FUTURO)**
+Opciones para producción:
+- **PostgreSQL** (Supabase, Neon.tech)
+- **PlanetScale** (MySQL serverless)
+- **Railway** (PostgreSQL)
+
+## 🔍 **DEBUGGING ACTUAL**
+
+### **Error en producción:**
+```json
+{
+  "error": "Error interno del servidor. Por favor intenta más tarde."
+}
+```
+
+**Causa:** Falta `RESEND_API_KEY` en variables de entorno de Vercel
+
+**Solución:** Configurar Resend según `RESEND_SETUP_GUIDE.md`
 
 ## 🧪 **CÓMO PROBAR LOS FORMULARIOS**
 
