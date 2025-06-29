@@ -37,31 +37,7 @@ export default function ContactForm() {
   } = useContactForm()
 
   // Debug log
-  console.log('ContactForm state:', { isLoading, isSuccess, error })
-
-  if (isSuccess) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl p-8 sm:p-12 text-center max-w-md w-full">
-          <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="w-8 h-8 text-blue-600" />
-          </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">
-            {t('contact.success.title')}
-          </h3>
-          <p className="text-gray-600 mb-6 leading-relaxed">
-            {t('contact.success.message')}
-          </p>
-          <button
-            onClick={resetForm}
-            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 hover:scale-105"
-          >
-            {t('contact.success.button')}
-          </button>
-        </div>
-      </div>
-    )
-  }
+  console.log('ContactForm render - state:', { isLoading, isSuccess, error, formData })
 
   return (    <section 
       ref={elementRef}
@@ -80,9 +56,40 @@ export default function ContactForm() {
             </p>
           </div>
 
+          {/* Success State - Full Width */}
+          {isSuccess && (
+            <div className="max-w-2xl mx-auto text-center mb-12">
+              <div className="bg-white rounded-2xl shadow-2xl p-8 sm:p-12">
+                <div className="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <CheckCircle className="w-10 h-10 text-green-600" />
+                </div>
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">
+                  ¡Mensaje Enviado Exitosamente!
+                </h3>
+                <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                  Gracias por contactarnos. Hemos recibido tu mensaje y te responderemos dentro de las próximas 24 horas.
+                </p>
+                <div className="space-y-4">
+                  <button
+                    onClick={resetForm}
+                    className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-200 hover:scale-105 mr-4"
+                  >
+                    Enviar Otro Mensaje
+                  </button>
+                  <a
+                    href="/"
+                    className="inline-block bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-8 rounded-lg transition-all duration-200"
+                  >
+                    Volver al Inicio
+                  </a>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             {/* Contact Information */}
-            <div className={`transition-all duration-1000 delay-200 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}`}>
+            <div className={`transition-all duration-1000 delay-200 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'} ${isSuccess ? 'opacity-50' : ''}`}>
               <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-8 sm:p-10 text-white h-full">
                 <h3 className="text-2xl sm:text-3xl font-bold mb-6">
                   {t('contact.info.title')}
@@ -146,7 +153,7 @@ export default function ContactForm() {
             </div>
 
             {/* Contact Form */}
-            <div className={`transition-all duration-1000 delay-400 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}>
+            <div className={`transition-all duration-1000 delay-400 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'} ${isSuccess ? 'hidden' : ''}`}>
               <div className="bg-white rounded-2xl shadow-xl p-8 sm:p-10">
                 <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
                   {t('contact.form.title')}
@@ -162,10 +169,12 @@ export default function ContactForm() {
                   </div>
                 )}
 
-                <form onSubmit={(e) => {
+                <form onSubmit={async (e) => {
                   e.preventDefault()
-                  console.log('Form submitted') // Debug log
-                  submitForm(e)
+                  console.log('Form submitted, current state:', { isLoading, isSuccess, error })
+                  console.log('Form data before submit:', formData)
+                  await submitForm(e)
+                  console.log('Form submitted, new state:', { isLoading, isSuccess, error })
                 }} className="space-y-6">
                   {/* Name Field */}
                   <div>

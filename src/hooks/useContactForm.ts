@@ -44,14 +44,18 @@ export const useContactForm = () => {
       e.preventDefault()
     }
     
+    console.log('submitForm called - current state:', { isLoading, isSuccess, error }) // Debug log
     setIsLoading(true)
     setError(null)
+    setIsSuccess(false) // Reset success state
 
     try {
       const submitData = {
         ...formData,
         service: formData.subject || formData.service // Map subject to service for backend compatibility
       }
+
+      console.log('Submitting data:', submitData) // Debug log
 
       const response = await fetch('/api/contact', {
         method: 'POST',
@@ -60,6 +64,8 @@ export const useContactForm = () => {
         },
         body: JSON.stringify(submitData)
       })
+
+      console.log('Response status:', response.status, 'ok:', response.ok) // Debug log
 
       if (!response.ok) {
         const errorData = await response.json()
@@ -72,14 +78,20 @@ export const useContactForm = () => {
       if (result.success) {
         console.log('Setting success to true') // Debug log
         setIsSuccess(true)
-        setFormData(initialFormData)
+        // Don't reset form data immediately, let user see the success message first
+        setTimeout(() => {
+          setFormData(initialFormData)
+        }, 100)
       } else {
         throw new Error(result.error || 'Error al enviar el formulario')
       }
     } catch (err) {
+      console.error('Submit error:', err) // Debug log
       setError(err instanceof Error ? err.message : 'Error desconocido')
+      setIsSuccess(false)
     } finally {
       setIsLoading(false)
+      console.log('Submit completed - new state will be:', { isLoading: false }) // Debug log
     }
   }
 
