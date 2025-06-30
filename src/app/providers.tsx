@@ -1415,6 +1415,9 @@ const translations = {
     'contact.send': 'Send Message',
     'contact.sending': 'Sending...',
     'contact.success': 'Message sent successfully',
+    'contact.success.title': 'Message Sent Successfully!',
+    'contact.success.message': 'Thank you for contacting us. We will respond to your message as soon as possible.',
+    'contact.success.button': 'Send Another Message',
     'contact.error': 'Error sending message',
     
     // CTA section translations
